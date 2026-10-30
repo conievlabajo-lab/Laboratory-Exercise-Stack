@@ -1,0 +1,137 @@
+/* Description: Checks whether a sequence of delimiters ( ), [ ] and { } is properly
+   matched and nested using a stack. Displays a step-by-step trace of every push,
+   peek and pop, and the reason when the sequence is invalid.
+
+   Programmed by: <Joyce Jabillo> <BSIT> <48079> <Data Structures And Algorithms>
+
+   Last Modified: October 27, 2026
+
+   Version: 1.0
+
+   Acknowledgements: Claude (Anthropic) was used to draft the code.
+   Prompt: "answer the task in the file that i upload" (uploaded: Stack - Matching Delimiters lab sheet).
+*/
+
+import java.util.Scanner;
+
+public class DelimiterChecker {
+
+    // ---------- Simple array-based stack of characters ----------
+    static class CharStack {
+        private char[] data = new char[10];
+        private int size = 0;
+
+        void push(char c) {
+            if (size == data.length) {
+                char[] bigger = new char[size * 2];
+                System.arraycopy(data, 0, bigger, 0, size);
+                data = bigger;
+            }
+            data[size++] = c;
+        }
+
+        char pop() {
+            return data[--size];
+        }
+
+        char peek() {
+            return data[size - 1];
+        }
+
+        boolean isEmpty() {
+            return size == 0;
+        }
+
+        // Bottom -> top, e.g. "{ [ ("
+        String contents() {
+            if (size == 0) return "(empty)";
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < size; i++) {
+                sb.append(data[i]);
+                if (i < size - 1) sb.append(' ');
+            }
+            return sb.toString();
+        }
+    }
+
+    // ---------- Helpers ----------
+    static boolean isOpening(char c) {
+        return c == '(' || c == '[' || c == '{';
+    }
+
+    static boolean isClosing(char c) {
+        return c == ')' || c == ']' || c == '}';
+    }
+
+    static boolean matches(char open, char close) {
+        return (open == '(' && close == ')')
+            || (open == '[' && close == ']')
+            || (open == '{' && close == '}');
+    }
+
+    // ---------- Main checking routine (prints the trace) ----------
+    static boolean check(String input) {
+        CharStack stack = new CharStack();
+        System.out.println("Input: " + input);
+        System.out.println("----------------------------------------");
+
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+
+            if (c == ' ') continue;              // ignore spaces
+            if (!isOpening(c) && !isClosing(c)) continue; // ignore other characters
+
+            System.out.println("Read: " + c);
+
+            if (isOpening(c)) {
+                stack.push(c);
+                System.out.println("Operation: PUSH " + c);
+                System.out.println("Stack: " + stack.contents());
+
+            } else { // closing delimiter
+                if (stack.isEmpty()) {
+                    System.out.println("Operation: CHECK -> stack is empty");
+                    System.out.println("Result: INVALID - closing delimiter '" + c
+                            + "' has no matching opening delimiter.");
+                    return false;
+                }
+
+                char top = stack.peek();
+                System.out.println("Operation: PEEK -> " + top);
+
+                if (matches(top, c)) {
+                    stack.pop();
+                    System.out.println("Operation: POP " + top);
+                    System.out.println("Stack: " + stack.contents());
+                } else {
+                    System.out.println("Result: INVALID - mismatched delimiters: '" + c
+                            + "' does not match the top of the stack '" + top + "'.");
+                    System.out.println("Stack: " + stack.contents());
+                    return false;
+                }
+            }
+        }
+
+        if (!stack.isEmpty()) {
+            System.out.println("Result: INVALID - unmatched opening delimiter remains. Stack: "
+                    + stack.contents());
+            return false;
+        }
+
+        System.out.println("Result: stack is empty after processing all characters.");
+        return true;
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Enter a sequence of delimiters: ");
+        String input = sc.hasNextLine() ? sc.nextLine() : "";
+        System.out.println();
+
+        boolean valid = check(input);
+
+        System.out.println("----------------------------------------");
+        System.out.println(valid ? "VALID" : "INVALID");
+        sc.close();
+    }
+}
