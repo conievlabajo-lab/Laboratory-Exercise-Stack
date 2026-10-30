@@ -2,9 +2,9 @@
    matched and nested using a stack. Displays a step-by-step trace of every push,
    peek and pop, and the reason when the sequence is invalid.
 
-   Programmed by: <Joyce Jabillo> <BSIT> <48079> <Data Structures And Algorithms>
+   Programmed by: <Conie Vevs Labajo > <BSIT> <48079> <Data Structures And Algorithms>
 
-   Last Modified: October 27, 2026
+   Last Modified: October 28, 2026
 
    Version: 1.0
 
